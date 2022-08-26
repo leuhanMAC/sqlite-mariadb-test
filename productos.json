@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Regla",
+    "price": 123,
+    "thumbnail": "https://www.distribuidoraorfei.com.ar/fotito/500/500/XY/grafica/productos/005000/009934-01-01.jpg",
+    "id": 1
+  },
+  {
+    "title": "Goma de borrar",
+    "price": 23,
+    "thumbnail": "https://www.librerialarubrica.com/wp-content/uploads/2020/04/goma-de-borrar-lapiz-blanca-maped-mini-technic.jpg",
+    "id": 2
+  },
+  {
+    "title": "Celular",
+    "price": 123,
+    "thumbnail": "https://ichef.bbci.co.uk/news/640/cpsprodpb/BE54/production/_117842784_lg.jpg",
+    "id": 3
+  },
+  {
+    "title": "Calculadora",
+    "price": "123",
+    "thumbnail": "https://libreriairbe.com/wp-content/uploads/2021/06/Calculadora-Cientifica-CASIO-fx-82LA-PLUS-Azul-1000x1000.jpg",
+    "id": 4
+  }
+]
