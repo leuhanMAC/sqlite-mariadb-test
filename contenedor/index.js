@@ -1,124 +1,72 @@
 const fs = require('fs');
-
+const knex = require('knex');
 class Contenedor {
-    constructor(fileName){
-        this.fileName = fileName;
-        this.createIfNotExist();
+    constructor(config, tableName) {
+        this.config = config;
+        this.tableName = tableName;
+        this.knex = knex(this.config);
     }
-    
-    async createIfNotExist(){
-        try{
+
+    async createIfNotExist() {
+        try {
             await fs.promises.access(this.fileName)
-        }catch(err){
+        } catch (err) {
             await fs.promises.writeFile(this.fileName, '[]', 'utf8');
         }
     }
 
-    async getAll(){
+    async getAll() {
         try {
-            return JSON.parse(await fs.promises.readFile(this.fileName, 'utf8'));
+            const columns = await this.knex.from(this.tableName).select('*');
+            return columns;
+
         } catch (err) {
-            if(err.message.includes('ENOENT')){
-                await this.createIfNotExist();
-                return this.save(content);
-            } else {
-                throw new Error(err);
-            }
+            throw new Error(err);
         }
     }
 
-    async save(content){
+    async save(content) {
         try {
-            const data = await this.getAll();
-            content.id = (data[data.length - 1]?.id || 0) + 1;
-            data.push(content);
-            await fs.promises.writeFile(this.fileName, JSON.stringify(data, null, 2), 'utf8');
+            const data = await knex(this.tableName).insert(content);
+            return data;
         } catch (err) {
-            if(err.message.includes('ENOENT')){
-                await this.createIfNotExist();
-                return this.save(content);
-            } else {
-                throw new Error(err)
-            }
+            throw new Error(err)
         }
     }
 
-    async updateById(content){
-        let wasFound = false;
-        let product = content;
+    async updateById(content) {
 
         try {
-
-            const data = await this.getAll();
-
-            const newData = data.map(item => {
-
-                if(item.id === product.id){
-
-                    wasFound = true;
-
-                    product = {...item, ...product};
-                    return product;
-                }
-
-                return item;
-            });
-
-            await fs.promises.writeFile(this.fileName, JSON.stringify(newData, null, 2), 'utf8');
-            return wasFound ? product : null;
-
+            await this.knex.from(this.tableName).update(content).update()
+            return true
         } catch (err) {
-            if(err.message.includes('ENOENT')){
-                await this.createIfNotExist();
-                return this.save(content);
-            } else {
-                throw new Error(err)
-            }
+            throw new Error(err)
         }
     }
 
-    async getById(id){
+    async getById(id) {
         try {
-            const data = await this.getAll();
-            return data.find(item => item.id === id);
+            const data = await this.knex.from(this.tableName).select().table(this.tableName).where('id', id).first();
+            return data;
         } catch (error) {
-            if(err.message.includes('ENOENT')){
-                await this.createIfNotExist();
-                return this.save(content);
-            } else {
-                throw new Error(err)
-            }
+            throw new Error(err)
         }
     }
 
-    async deleteById(id){
+    async deleteById(id) {
         try {
-            const data = await this.getAll();
-            const newData = data.filter(item => item.id !== id);
-            await fs.promises.writeFile(this.fileName, JSON.stringify(newData, null, 2), 'utf8');
-
-            return data.find(item => item.id === id);
-
-        } catch(error){
-            if(err.message.includes('ENOENT')){
-                await this.createIfNotExist();
-                return this.save(content);
-            } else {
-                throw new Error(err)
-            }
+            const data = await this.knex.from(this.tableName).where('id', '=', id).del();
+            return data;
+        } catch (error) {
+            throw new Error(err)
         }
     }
 
-    async deleteAll(){
+    async deleteAll() {
         try {
-            await fs.promises.writeFile(this.fileName, '[]', 'utf8');
-        } catch(error){
-            if(err.message.includes('ENOENT')){
-                await this.createIfNotExist();
-                return this.save(content);
-            } else {
-                throw new Error(err)
-            }
+            await this.knex.from(this.tableName).del()
+        } catch (error) {
+            throw new Error(err)
         }
     }
 }

@@ -3,10 +3,11 @@ const { createServer } = require('http');
 const { Server: IOServer } = require('socket.io');
 const hbs = require("express-handlebars");
 const Container = require("./contenedor");
+const { optionsMariaDB, optionsSQLite3 } = require("./options/config");
 
 
-const productFiles = new Container("productos.json");
-const chat = new Container("chat.json");
+const productFiles = new Container(optionsMariaDB, "products");
+const chat = new Container(optionsSQLite3, "messages");
 
 const PORT = process.env.PORT || 3000;
 
