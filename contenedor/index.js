@@ -7,14 +7,6 @@ class Contenedor {
         this.knex = knex(this.config);
     }
 
-    async createIfNotExist() {
-        try {
-            await fs.promises.access(this.fileName)
-        } catch (err) {
-            await fs.promises.writeFile(this.fileName, '[]', 'utf8');
-        }
-    }
-
     async getAll() {
         try {
             const columns = await this.knex.from(this.tableName).select('*');
@@ -27,7 +19,7 @@ class Contenedor {
 
     async save(content) {
         try {
-            const data = await knex(this.tableName).insert(content);
+            const data = await this.knex(this.tableName).insert(content);
             return data;
         } catch (err) {
             throw new Error(err)
